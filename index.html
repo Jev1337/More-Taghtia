@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    	<meta charset=utf-8 />
+    	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <title>Map</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+        <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+    	<script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js"></script>
+    	<link href='style.css' rel='stylesheet' />
+    </head>
+    <body>
+
+    
+        
+        <!-- navigation bar color must be 00426b -->
+   <nav class="navbar navbar-fixed-top header" style="background-color: #00426b; color: #ffffff;"
+    role="navigation">
+    
+    <div class="navbar-header">
+        <img src="taghtia.png" alt="taghtia" width="80" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;"/>
+     <a style="margin-left: 10px; color: #ffffff;" class="navbar-brand" href="#">More Taghtia</a>
+    </div>
+    
+   </nav>
+   
+ 
+    
+       
+    <div id="panel">
+        
+      
+     <div id="collapseBtn" >     
+      <button type="button" class="btn btn-sm hidden-xs"  onclick="collapsePanel();"><</button>
+     </div>
+     
+     <div id="panelContent" class="container-fluid" >
+        More Taghtia is an improved version of the original taghtia.
+        <hr>
+        <div id="contentTable">
+            <h4>Potential:</h4>
+            <table width="100%">
+                <tr>
+                    <td>2G:</td>
+                    <td style="color: red;" id="2G">N/A</td>
+                </tr>
+                <tr>
+                    <td>3G:</td>
+                    <td style="color: red;" id="3G">N/A</td>
+                </tr>
+                <tr>
+                    <td>4G:</td>
+                    <td style="color: red;" id="4G">N/A</td>
+                </tr>
+                <tr>
+                    <td>ADSL:</td>
+                    <td style="color: red;" id="ADSL">N/A</td>
+                </tr>
+                <tr>
+                    <td>VDSL:</td>
+                    <td style="color: red;" id="VDSL">N/A</td>
+                </tr>
+                <tr>
+                    <td>GPON Fiber:</td>
+                    <td style="color: red;" id="GPONFiber">N/A</td>
+                </tr>
+                <tr>
+                    <td>P2P Fiber:</td>
+                    <td style="color: red;" id="P2PFiber">N/A</td>
+                </tr>
+            </table>
+        </div>
+        <hr>
+        <div id ="more"> </div>
+        <button id="taghtia" class="btn btn-primary" onclick="taghtia();">Check Coverage</button>
+     </div>
+    </div>
+    <input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate">
+    
+    <div id="map-display"></div>
+        
+    <script src='script.js'></script>
+
+    </body>
+</html>
