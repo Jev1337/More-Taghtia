@@ -32,7 +32,6 @@ div#panel {
   top: 159px;
   padding-top: 8px;          /* needed to move the content below the gray shadow specified in the header */
   height: 100%; /* calc is used to substract the height of the navbar */
-
   width: 300px;
   background-color: #fafafa;
   opacity: 0.92;
@@ -72,7 +71,7 @@ div#panelContent {
   -webkit-transition: opacity 0.6s;
   transition: opacity 0.6s;
 }
-
+/*
 @media all and (max-width: 768px) {
   div#panel {
   	 width: 0px;
@@ -81,7 +80,7 @@ div#panelContent {
   	 opacity: 0;
   }
 }
-
+*/
 /* OpenLayers controls */
 
 .ol-zoom {
