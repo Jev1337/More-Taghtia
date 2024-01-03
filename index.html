@@ -10,6 +10,7 @@
     	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
         <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
         <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     	<script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js"></script>
     	<link href='style.css' rel='stylesheet' />
     </head>
@@ -50,31 +51,31 @@
             <table width="100%">
                 <tr>
                     <td>2G:</td>
-                    <td style="color: red;" id="2G">N/A</td>
+                    <td style="color: orange;" id="2G">N/A</td>
                 </tr>
                 <tr>
                     <td>3G:</td>
-                    <td style="color: red;" id="3G">N/A</td>
+                    <td style="color: orange;" id="3G">N/A</td>
                 </tr>
                 <tr>
                     <td>4G:</td>
-                    <td style="color: red;" id="4G">N/A</td>
+                    <td style="color: orange;" id="4G">N/A</td>
                 </tr>
                 <tr>
                     <td>ADSL:</td>
-                    <td style="color: red;" id="ADSL">N/A</td>
+                    <td style="color: orange;" id="ADSL">N/A</td>
                 </tr>
                 <tr>
                     <td>VDSL:</td>
-                    <td style="color: red;" id="VDSL">N/A</td>
+                    <td style="color: orange;" id="VDSL">N/A</td>
                 </tr>
                 <tr>
                     <td>GPON Fiber:</td>
-                    <td style="color: red;" id="GPONFiber">N/A</td>
+                    <td style="color: orange;" id="GPONFiber">N/A</td>
                 </tr>
                 <tr>
                     <td>P2P Fiber:</td>
-                    <td style="color: red;" id="P2PFiber">N/A</td>
+                    <td style="color: orange;" id="P2PFiber">N/A</td>
                 </tr>
             </table>
         </div>
@@ -84,7 +85,7 @@
      </div>
     </div>
     <input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate">
-    
+    <button style="position: absolute; z-index: 1; margin-left: 250px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" onclick="zoomtocurrentlocation();"><i class="bi bi-crosshair"></i></button>
     <div id="map-display"></div>
         
     <script src='script.js'></script>

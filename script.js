@@ -21,16 +21,18 @@ function showMap(err,results) {
         console.error("No results found.");
         return;
     }
-      mymap.setView([results.latlng[0], results.latlng[1]], 40);
+      mymap.setView([results.latlng[0], results.latlng[1]], 13);
   }
 
+  function zoomtocurrentlocation(){
+    mymap.locate({setView: true, maxZoom: 16});
+  }
 function search() {
     var query = document.getElementById('address').value;
     var geocoder = L.mapbox.geocoder('mapbox.places');
-    //create an object containing the query: { query: query, proximity: L.latlng(36.804914, 10.182365) }
     var options = {
         query: query,
-        country: 'TN' // Example: restrict results to a specific country
+        country: 'TN'
       };
     geocoder.query(options, showMap);
 }
@@ -45,7 +47,12 @@ mymap.on('click', addMarker);
 
 function addMarker(e){
   if (typeof circleMarker !== "undefined" ){ 
-    mymap.removeLayer(circleMarker);         
+    mymap.removeLayer(circleMarker);    
+    mymap.eachLayer(function (layer) {
+        if (layer instanceof L.Tooltip) {
+            mymap.removeLayer(layer);
+        }
+    });     
   }
   //add marker
   circleMarker = new  L.circle(e.latlng, 20, {
@@ -171,7 +178,6 @@ async function taghtia(){
         return;
     }
     var token = await getToken();
-    //POST request https://geo.tunisietelecom.tn/rsm/RSMService.svc/TaghtiaUltimate with the following Payload {TaghtiaRequest: {token: "", X: , Y: }}
     var coded = codeCoordinates(circleMarker._latlng.lng,circleMarker._latlng.lat);
     var X = coded.xCoded;
     var Y = coded.yCoded;
@@ -185,16 +191,14 @@ async function taghtia(){
         },
         body: JSON.stringify(payload),
     });
-    //change button to loading button animation (replace text by spinner of bootstrap) and disable it
-    //button id is taghtia
     var data = await response.json();
     document.getElementById("taghtia").innerHTML = 'Taghtia';
     document.getElementById("taghtia").disabled = false;
-    //once we get the response, we will use it to update table datas and show the results
     var result = data.TaghtiaUltimateResult;
     if (result.taghtia2G.Code_taghtia == 200 && result.taghtia2G.Taghtia == "OUI") {
         document.getElementById("2G").innerHTML = "Available";
         document.getElementById("2G").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
     }else{
         document.getElementById("2G").innerHTML = "N/A";
         document.getElementById("2G").style.color = "red";
@@ -202,6 +206,7 @@ async function taghtia(){
     if (result.taghtia3G.Code_taghtia == 200 && result.taghtia3G.Taghtia == "OUI") {
         document.getElementById("3G").innerHTML = "Available";
         document.getElementById("3G").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
     }else{
         document.getElementById("3G").innerHTML = "N/A";
         document.getElementById("3G").style.color = "red";
@@ -209,41 +214,54 @@ async function taghtia(){
     if (result.taghtia4G.Code_taghtia == 200 && result.taghtia4G.Taghtia == "OUI") {
         document.getElementById("4G").innerHTML = "Available";
         document.getElementById("4G").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
     }else{
         document.getElementById("4G").innerHTML = "N/A";
         document.getElementById("4G").style.color = "red";
     }
     if (result.taghtiaADSLVDSL.taghtiaADSL.Code_taghtia == 200 && result.taghtiaADSLVDSL.taghtiaADSL.Taghtia == "OUI") {
-        result.taghtiaADSLVDSL.taghtiaADSL.Debit += " ↓ 1Mb/s ↑";
+        result.taghtiaADSLVDSL.taghtiaADSL.Debit += " <i class='bi bi-download'></i> 1Mb/s <i class='bi bi-upload'></i> ";
         document.getElementById("ADSL").innerHTML = result.taghtiaADSLVDSL.taghtiaADSL.Debit;
         document.getElementById("ADSL").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
+        circleMarker.bindTooltip("ADSL ✅", {permanent: true, className: "ADSLg", offset: [0, -35] });
     }else{
         document.getElementById("ADSL").innerHTML = "N/A";
         document.getElementById("ADSL").style.color = "red";
+        circleMarker.bindTooltip("ADSL ❌", {permanent: true, className: "ADSLb", offset: [0, -35] });
     }
     if (result.taghtiaADSLVDSL.taghtiaVDSL.Code_taghtia == 200 && result.taghtiaADSLVDSL.taghtiaVDSL.Taghtia == "OUI") {
         result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Down/", "Down");
-        result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Down", "↓");
-        result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Up", "↑");
+        result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Down", "<i class='bi bi-download'></i>");
+        result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Up", "<i class='bi bi-upload'></i>");
         document.getElementById("VDSL").innerHTML = result.taghtiaADSLVDSL.taghtiaVDSL.Debit;
         document.getElementById("VDSL").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
+        circleMarker.bindTooltip("VDSL ✅", {permanent: true, className: "VDSLg", offset: [0, 0] });
+        
     }else{
         document.getElementById("VDSL").innerHTML = "N/A";
         document.getElementById("VDSL").style.color = "red";
+        circleMarker.bindTooltip("VDSL ❌", {permanent: true, className: "VDSLb", offset: [0, 0] });
     }
     if (result.taghtiaGPON.Code_taghtia == 200 && result.taghtiaGPON.Message_taghtia == "OK" && result.taghtiaGPON.Taghtia == "OUI") {
         result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Down/", "Down");
-        result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Down", "↓");
-        result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Up", "↑");
+        result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Down", "<i class='bi bi-download'></i>");
+        result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Up", "<i class='bi bi-upload'></i>");
         document.getElementById("GPONFiber").innerHTML = result.taghtiaGPON.Debit;
         document.getElementById("GPONFiber").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
+        //add text inside the CircleMarker saying GPON
+        circleMarker.bindTooltip("GPON Fiber ✅", {permanent: true, className: "GPONg", offset: [0, 35] });
     }else{
         document.getElementById("GPONFiber").innerHTML = "N/A";
         document.getElementById("GPONFiber").style.color = "red";
+        circleMarker.bindTooltip("GPON Fiber ❌", {permanent: true, className: "GPONb", offset: [0, 35] });
     }
     if (result.taghtiaFibreP2P.Code_taghtia == 200) {
         document.getElementById("P2PFiber").innerHTML = "Available";
         document.getElementById("P2PFiber").style.color = "green";
+        circleMarker.setStyle({color: 'green', fillColor: 'green'});
     } else{
         document.getElementById("P2PFiber").innerHTML = "N/A";
         document.getElementById("P2PFiber").style.color = "red";
