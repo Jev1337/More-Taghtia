@@ -55,7 +55,7 @@ function addMarker(e){
     });     
   }
   //add marker
-  circleMarker = new  L.circle(e.latlng, 20, {
+  circleMarker = new  L.circle(e.latlng, 8, {
                 color: 'red',
                 fillColor: '#f03',
                 fillOpacity: 0.5
@@ -191,6 +191,7 @@ async function taghtia(){
         },
         body: JSON.stringify(payload),
     });
+    var stat="";
     var data = await response.json();
     document.getElementById("taghtia").innerHTML = 'Taghtia';
     document.getElementById("taghtia").disabled = false;
@@ -224,11 +225,11 @@ async function taghtia(){
         document.getElementById("ADSL").innerHTML = result.taghtiaADSLVDSL.taghtiaADSL.Debit;
         document.getElementById("ADSL").style.color = "green";
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
-        circleMarker.bindTooltip("ADSL ✅", {permanent: true, className: "ADSLg", offset: [0, -35] });
+        stat+="ADSL ✅<br>"
     }else{
         document.getElementById("ADSL").innerHTML = "N/A";
         document.getElementById("ADSL").style.color = "red";
-        circleMarker.bindTooltip("ADSL ❌", {permanent: true, className: "ADSLb", offset: [0, -35] });
+        stat+="ADSL ❌<br>"
     }
     if (result.taghtiaADSLVDSL.taghtiaVDSL.Code_taghtia == 200 && result.taghtiaADSLVDSL.taghtiaVDSL.Taghtia == "OUI") {
         result.taghtiaADSLVDSL.taghtiaVDSL.Debit = result.taghtiaADSLVDSL.taghtiaVDSL.Debit.replace("Down/", "Down");
@@ -237,12 +238,12 @@ async function taghtia(){
         document.getElementById("VDSL").innerHTML = result.taghtiaADSLVDSL.taghtiaVDSL.Debit;
         document.getElementById("VDSL").style.color = "green";
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
-        circleMarker.bindTooltip("VDSL ✅", {permanent: true, className: "VDSLg", offset: [0, 0] });
+        stat+="VDSL ✅<br>"
         
     }else{
         document.getElementById("VDSL").innerHTML = "N/A";
         document.getElementById("VDSL").style.color = "red";
-        circleMarker.bindTooltip("VDSL ❌", {permanent: true, className: "VDSLb", offset: [0, 0] });
+        stat+="VDSL ❌<br>"
     }
     if (result.taghtiaGPON.Code_taghtia == 200 && result.taghtiaGPON.Message_taghtia == "OK" && result.taghtiaGPON.Taghtia == "OUI") {
         result.taghtiaGPON.Debit = result.taghtiaGPON.Debit.replace("Down/", "Down");
@@ -251,12 +252,11 @@ async function taghtia(){
         document.getElementById("GPONFiber").innerHTML = result.taghtiaGPON.Debit;
         document.getElementById("GPONFiber").style.color = "green";
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
-        //add text inside the CircleMarker saying GPON
-        circleMarker.bindTooltip("GPON Fiber ✅", {permanent: true, className: "GPONg", offset: [0, 35] });
+        stat+="GPON Fiber ✅"
     }else{
         document.getElementById("GPONFiber").innerHTML = "N/A";
         document.getElementById("GPONFiber").style.color = "red";
-        circleMarker.bindTooltip("GPON Fiber ❌", {permanent: true, className: "GPONb", offset: [0, 35] });
+        stat+="GPON Fiber ❌"
     }
     if (result.taghtiaFibreP2P.Code_taghtia == 200) {
         document.getElementById("P2PFiber").innerHTML = "Available";
@@ -269,109 +269,10 @@ async function taghtia(){
 
     if (result.NearByPC.count > 0) {
         document.getElementById("more").innerHTML = "<h4>More Information:</h4>";
-        document.getElementById("more").innerHTML += "<table width='100%'><tr><td>Designation:</td><td>" + result.NearByPC.pclist[0].designation + "</td></tr><tr><td>Distance:</td><td>" + result.NearByPC.pclist[0].distance + "</td></tr><tr><td>Nom RGMSAN:</td><td>" + result.NearByPC.pclist[0].nom_rgmsan + "</td></tr><tr><td>Nom SR:</td><td>" + result.NearByPC.pclist[0].nom_sr + "</td></tr></table>"
+        document.getElementById("more").innerHTML += "<table width='100%' id='moreinfo'><tr><td>Designation:</td><td>" + result.NearByPC.pclist[0].designation + "</td></tr><tr><td>Distance:</td><td>" + result.NearByPC.pclist[0].distance + "</td></tr><tr><td>Nom RGMSAN:</td><td>" + result.NearByPC.pclist[0].nom_rgmsan + "</td></tr><tr><td>Nom SR:</td><td>" + result.NearByPC.pclist[0].nom_sr + "</td></tr></table>"
         document.getElementById("more").innerHTML += "<hr>";
     }else
         document.getElementById("more").innerHTML = "";
-
-    /*
-    Response:
-    {
-    "TaghtiaUltimateResult": {
-        "NearByPC": {
-            "code": "1",
-            "count": 1,
-            "message": "OK",
-            "pclist": [
-                {
-                    "designation": "D2\/14",
-                    "distance": 16.228177610849833,
-                    "guid": "{7E7E95CB-AE95-4D69-B22E-95B6B73118BA}",
-                    "id_rgmsan": "{49C9AD00-D73A-400E-80CC-ED1315BAAAB9}",
-                    "id_sr": "{FC50ED2A-D7CA-4550-92B4-29A06A09767C}",
-                    "nom_rgmsan": "riadh_andalous",
-                    "nom_sr": "sr3_riadh_andalous",
-                    "pc_acap": 0,
-                    "pc_acap_code": 0
-                }
-            ]
-        },
-        "code": "1",
-        "date_etude": 1704212969,
-        "hors_zone": 0,
-        "hors_zone_taghtia": 0,
-        "id_taghtia": "xzy11yz22z1704212964840",
-        "message": "Taghtia Ultimate: OK",
-        "source": "ULTIMATE",
-        "taghtia2G": {
-            "Classe": "0",
-            "Code_taghtia": "0",
-            "Debit": "",
-            "Message_taghtia": "Erreur WS",
-            "Nom": "",
-            "Taghtia": "",
-            "Type": "2G"
-        },
-        "taghtia3G": {
-            "Classe": "0",
-            "Code_taghtia": "0",
-            "Debit": "",
-            "Message_taghtia": "Erreur WS",
-            "Nom": "",
-            "Taghtia": "",
-            "Type": "3G"
-        },
-        "taghtia4G": {
-            "Classe": "0",
-            "Code_taghtia": "0",
-            "Debit": "",
-            "Message_taghtia": "Erreur WS",
-            "Nom": "",
-            "Taghtia": "",
-            "Type": "4G"
-        },
-        "taghtiaADSLVDSL": {
-            "FADSL": 0,
-            "FVDSL": 0,
-            "taghtiaADSL": {
-                "Classe": "",
-                "Code_taghtia": "2",
-                "Debit": "",
-                "Message_taghtia": "No route from PC",
-                "Nom": "",
-                "Taghtia": "Information non disponible",
-                "Type": "ADSL"
-            },
-            "taghtiaVDSL": {
-                "Classe": "",
-                "Code_taghtia": "2",
-                "Debit": "",
-                "Message_taghtia": "No route from PC",
-                "Nom": "",
-                "Taghtia": "Information non disponible",
-                "Type": "VDSL"
-            }
-        },
-        "taghtiaFibreP2P": {
-            "Classe": "",
-            "Code_taghtia": "0",
-            "Debit": "",
-            "Message_taghtia": "Erreur WS",
-            "Nom": "",
-            "Taghtia": "",
-            "Type": "Fibre P2P"
-        },
-        "taghtiaGPON": {
-            "Classe": "1",
-            "Code_taghtia": "200",
-            "Debit": "100Mb\/s Down\/ 16Mb\/s Up",
-            "Message_taghtia": "OK",
-            "Nom": "",
-            "Taghtia": "OUI",
-            "Type": "GPON"
-        }
-    }
-}
-    */
-
+    
+    circleMarker.bindTooltip(stat, {permanent: true, className: 'stats'});
 }

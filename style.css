@@ -30,7 +30,7 @@ html, body {
 div#panel {
   position: absolute;
   top: 159px;
-  padding-top: 8px;          /* needed to move the content below the gray shadow specified in the header */
+  padding-top: 8px;
   height: calc(100% - 101px);  
   width: 300px;
   background-color: #fafafa;
@@ -63,14 +63,37 @@ div#collapseBtn button {
   font-weight: bold;
 }
 
+
 div#panelContent {
   opacity: 1;
   height: inherit;   /* better than height: 100% */
   width: 100%;
-  overflow: auto;
   -webkit-transition: opacity 0.6s;
   transition: opacity 0.6s;
+  overflow-y: auto;
 }
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #00456b #ffffff;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #00456b;
+    border-radius: 0px;
+    border: 0px solid #ffffff;
+  }
 /*
 @media all and (max-width: 768px) {
   div#panel {

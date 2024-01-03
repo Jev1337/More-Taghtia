@@ -1,95 +1,90 @@
 <!DOCTYPE HTML>
 <html>
-    <head>
-    	<meta charset=utf-8 />
-    	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-        <link rel="icon" type="image/png" href="TT.png">
-        <title>More Taghtia</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
-        <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    	<script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js"></script>
-    	<link href='style.css' rel='stylesheet' />
-    </head>
-    <body>
+	<head>
+		<meta charset=utf-8 />
+		<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+		<link rel="icon" type="image/png" href="TT.png">
+		<title>More Taghtia</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+		<script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+		<link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+		<script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.18/web.js"></script>
+		<link href='style.css' rel='stylesheet' />
+	</head>
+	<body>
+		<!-- navigation bar color must be 00426b -->
+		<nav class="navbar navbar-fixed-top header" style="background-color: #00426b; color: #ffffff;" role="navigation">
+			<div class="navbar-header">
+				<a href="#">
+					<img src="taghtia.png" alt="taghtia" width="80" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;" />
+				</a>
+			</div>
+			<!-- Put to the rightest side the image -->
+			<a href="https://github.com/Jev1337" target="_blank" style="float: right">
+				<img src="reps.png" alt="reps" width="70" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px; float: right;" />
+                <span style="float: right; margin-top: 20px; margin-right: 10px; color: #ffffff;">Release v2.1</span>
+			</a>
+		</nav>
+		<div id="panel">
+			<div id="collapseBtn">
+				<button type="button" class="btn btn-sm hidden-xs" onclick="collapsePanel();">
+					< </button>
+			</div>
+			<div id="panelContent" class="container-fluid">
+                <div id="footer" style="font-size: small;">
 
-    
-        
-        <!-- navigation bar color must be 00426b -->
-   <nav class="navbar navbar-fixed-top header" style="background-color: #00426b; color: #ffffff;"
-    role="navigation">
-    
-    <div class="navbar-header">
-        <a href="#"><img src="taghtia.png" alt="taghtia" width="80" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;"/></a>
-    </div>
-    <!-- Put to the rightest side the image -->
-    <a href="https://github.com/Jev1337" target="_blank" style="float: right"><img src="reps.png" alt="reps" width="70" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px; float: right;"/></a>
-    
-    
-   </nav>
-   
- 
-    
-       
-    <div id="panel">
-        
-      
-     <div id="collapseBtn" >     
-      <button type="button" class="btn btn-sm hidden-xs"  onclick="collapsePanel();"><</button>
-     </div>
-     
-     <div id="panelContent" class="container-fluid" >
-        This is done for educational purposes only.
-        <br>
-        <a href="https://geo.tunisietelecom.tn/mytaghtia/">Source</a>
-        <hr>
-        <div id="contentTable">
-            <h4>Potential:</h4>
-            <table width="100%">
-                <tr>
-                    <td>2G:</td>
-                    <td style="color: orange;" id="2G">N/A</td>
-                </tr>
-                <tr>
-                    <td>3G:</td>
-                    <td style="color: orange;" id="3G">N/A</td>
-                </tr>
-                <tr>
-                    <td>4G:</td>
-                    <td style="color: orange;" id="4G">N/A</td>
-                </tr>
-                <tr>
-                    <td>ADSL:</td>
-                    <td style="color: orange;" id="ADSL">N/A</td>
-                </tr>
-                <tr>
-                    <td>VDSL:</td>
-                    <td style="color: orange;" id="VDSL">N/A</td>
-                </tr>
-                <tr>
-                    <td>GPON Fiber:</td>
-                    <td style="color: orange;" id="GPONFiber">N/A</td>
-                </tr>
-                <tr>
-                    <td>P2P Fiber:</td>
-                    <td style="color: orange;" id="P2PFiber">N/A</td>
-                </tr>
-            </table>
-        </div>
-        <hr>
-        <div id ="more"> </div>
-        <button id="taghtia" class="btn btn-primary" onclick="taghtia();">Check Coverage</button>
-     </div>
-    </div>
-    <input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate">
-    <button style="position: absolute; z-index: 1; margin-left: 250px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" onclick="zoomtocurrentlocation();"><i class="bi bi-crosshair"></i></button>
-    <div id="map-display"></div>
-        
-    <script src='script.js'></script>
+                    <p style="align-content: center;"><b>Disclaimer: This is done for educational purposes only. I do not own the API.  </b></p>
+                    <a href="https://geo.tunisietelecom.tn/mytaghtia/" target="_blank">Original Taghtia</a>
+                </div>
+                <hr>
+				<div id="contentTable">
+					<h4>Potential:</h4>
+					<table width="100%">
+						<tr>
+							<td>2G:</td>
+							<td style="color: orange;" id="2G">--</td>
+						</tr>
+						<tr>
+							<td>3G:</td>
+							<td style="color: orange;" id="3G">--</td>
+						</tr>
+						<tr>
+							<td>4G:</td>
+							<td style="color: orange;" id="4G">--</td>
+						</tr>
+						<tr>
+							<td>ADSL:</td>
+							<td style="color: orange;" id="ADSL">--</td>
+						</tr>
+						<tr>
+							<td>VDSL:</td>
+							<td style="color: orange;" id="VDSL">--</td>
+						</tr>
+						<tr>
+							<td>GPON Fiber:</td>
+							<td style="color: orange;" id="GPONFiber">--</td>
+						</tr>
+						<tr>
+							<td>P2P Fiber:</td>
+							<td style="color: orange;" id="P2PFiber">--</td>
+						</tr>
+					</table>
+				</div>
+				<hr>
+				<div id="more"></div>
+				<button id="taghtia" class="btn btn-primary" style="background-color: #00426b; border-color: #00426b;" onclick="taghtia();">Check Coverage</button>
+                <hr>
 
-    </body>
+			</div>
+		</div>
+		<input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate">
+		<button style="position: absolute; z-index: 1; margin-left: 250px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" onclick="zoomtocurrentlocation();">
+			<i class="bi bi-crosshair"></i>
+		</button>
+		<div id="map-display"></div>
+		<script src='script.js'></script>
+	</body>
 </html>
-
