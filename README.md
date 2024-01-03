@@ -1,4 +1,4 @@
-# More Taghtia
+#
 ![More Taghtia](taghtia.png)
 
 ## Description
