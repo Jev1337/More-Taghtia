@@ -1,8 +1,9 @@
-# Taghtia
+# More Taghtia
+![More Taghtia](taghtia.png)
 
 ## Description
 
-Taghtia is a web application that allows you to check the coverage of Tunisie Telecom in your area.
+More Taghtia is an improved version of [Taghtia](https://geo.tunisietelecom.tn/mytaghtia/), a web application that allows you to check the coverage of Tunisie Telecom in your area.
 
 ## How to use
 
