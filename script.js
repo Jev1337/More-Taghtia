@@ -1,10 +1,10 @@
 /*global $*/
-/*global L*/
+/*global L
 $.getScript("env.js", function() {
     console.log("environment variables loaded.");
     populateMap();
 });
-
+*/
 /*
  * Initialize Map
  */
@@ -21,7 +21,6 @@ function showMap(err,results) {
         console.error("No results found.");
         return;
     }
-    console.log(results);
       mymap.setView([results.latlng[0], results.latlng[1]], 40);
   }
 
@@ -54,7 +53,6 @@ function addMarker(e){
                 fillColor: '#f03',
                 fillOpacity: 0.5
             }).addTo(mymap);
-    console.log(e.latlng)
     
 }
 
@@ -178,7 +176,6 @@ async function taghtia(){
     var X = coded.xCoded;
     var Y = coded.yCoded;
     var payload = {TaghtiaRequest: {token: token, X: X, Y: Y}};
-    console.log(payload);
     document.getElementById("taghtia").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
     document.getElementById("taghtia").disabled = true;
     var response = await fetch("https://geo.tunisietelecom.tn/rsm/RSMService.svc/TaghtiaUltimate", {
@@ -193,7 +190,6 @@ async function taghtia(){
     var data = await response.json();
     document.getElementById("taghtia").innerHTML = 'Taghtia';
     document.getElementById("taghtia").disabled = false;
-    console.log(data);
     //once we get the response, we will use it to update table datas and show the results
     var result = data.TaghtiaUltimateResult;
     if (result.taghtia2G.Code_taghtia == 200 && result.taghtia2G.Taghtia == "OUI") {
