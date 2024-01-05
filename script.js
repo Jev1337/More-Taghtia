@@ -8,6 +8,7 @@ $.getScript("env.js", function() {
 /*
  * Initialize Map
  */
+
 L.mapbox.accessToken = 'pk.eyJ1IjoibWF0aWtpbjkiLCJhIjoiYjMyMjBjZTE4NWUxMDkxOWZjZjFjZWEzZTcxNDUxOTkifQ._ldFl3e17jCs7aWm6zMZ3Q';
 var mymap = L.map('map-display').setView([36.804914, 10.182365], 9);
 L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v12').addTo(mymap);
@@ -193,7 +194,7 @@ async function taghtia(){
     });
     var stat="";
     var data = await response.json();
-    document.getElementById("taghtia").innerHTML = 'Taghtia';
+    document.getElementById("taghtia").innerHTML = 'Check Coverage';
     document.getElementById("taghtia").disabled = false;
     var result = data.TaghtiaUltimateResult;
     if (result.taghtia2G.Code_taghtia == 200 && result.taghtia2G.Taghtia == "OUI") {

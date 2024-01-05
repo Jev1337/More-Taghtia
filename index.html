@@ -3,7 +3,7 @@
 	<head>
 		<meta charset=utf-8 />
 		<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-		<link rel="icon" type="image/png" href="TT.png">
+		<link rel="icon" href="TT.ico">
 		<title>More Taghtia</title>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
@@ -25,7 +25,7 @@
 			<!-- Put to the rightest side the image -->
 			<a href="https://github.com/Jev1337" target="_blank" style="float: right">
 				<img src="reps.png" alt="reps" width="70" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px; float: right;" />
-                <span style="float: right; margin-top: 20px; margin-right: 10px; color: #ffffff;">Release v2.1</span>
+                <span style="float: right; margin-top: 20px; margin-right: 10px; color: #ffffff;">Release v2.2</span>
 			</a>
 		</nav>
 		<div id="panel">
@@ -80,11 +80,11 @@
 
 			</div>
 		</div>
-		<input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate">
+		<input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate ↵"> 
 		<button style="position: absolute; z-index: 1; margin-left: 250px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" onclick="zoomtocurrentlocation();">
 			<i class="bi bi-crosshair"></i>
 		</button>
-		<div id="map-display"></div>
+		<div id="map-display" class="dark"></div>
 		<script src='script.js'></script>
 	</body>
 </html>
