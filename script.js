@@ -64,6 +64,62 @@ function addMarker(e){
     
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const lati = urlParams.get('lat');
+const lngi = urlParams.get('lng');
+if (lati && lngi) {
+    mymap.setView([lati, lngi], 17);
+    circleMarker = new  L.circle([lati, lngi], 8, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5
+    }).addTo(mymap);
+}
+document.getElementById("googlemaps").onclick = function() {
+    if (typeof circleMarker === "undefined" ){ 
+        alert("Please select a location on the map");
+        return;
+    }
+    lat = Math.round(circleMarker._latlng.lat * 10000) / 10000;
+    lng = Math.round(circleMarker._latlng.lng * 10000) / 10000;
+    window.open("https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng);
+}
+document.getElementById("copy").onclick = function() {
+    if (typeof circleMarker === "undefined" ){ 
+        alert("Please select a location on the map");
+        return;
+    }
+    lat = Math.round(circleMarker._latlng.lat * 10000) / 10000;
+    lng = Math.round(circleMarker._latlng.lng * 10000) / 10000;
+    navigator.clipboard.writeText(lat + ", " + lng);
+    document.getElementById("copied").innerHTML = lat + ", " + lng + " copied to clipboard!";
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+      return new bootstrap.Toast(toastEl)
+    })
+    toastList.forEach(toast => toast.show())
+  }
+
+  document.getElementById("share").onclick = function() {
+    if (typeof circleMarker === "undefined" ){ 
+        alert("Please select a location on the map");
+        return;
+    }
+    lat = Math.round(circleMarker._latlng.lat * 10000) / 10000;
+    lng = Math.round(circleMarker._latlng.lng * 10000) / 10000;
+    shareurl = window.location.href + "?lat=" + lat + "&lng=" + lng;
+    navigator.clipboard.writeText(shareurl);
+    document.getElementById("copied").innerHTML = "Share URL copied to clipboard!";
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+      return new bootstrap.Toast(toastEl)
+    })
+    toastList.forEach(toast => toast.show())
+  }
+
+
+
+
 // Sample Code
 
 /*

@@ -15,6 +15,7 @@
 		<link href='style.css' rel='stylesheet' />
 	</head>
 	<body>
+		
 		<!-- navigation bar color must be 00426b -->
 		<nav class="navbar navbar-fixed-top header" style="background-color: #00426b; color: #ffffff;" role="navigation">
 			<div class="navbar-header">
@@ -25,7 +26,7 @@
 			<!-- Put to the rightest side the image -->
 			<a href="https://github.com/Jev1337" target="_blank" style="float: right">
 				<img src="reps.png" alt="reps" width="70" height="53" style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px; float: right;" />
-                <span style="float: right; margin-top: 20px; margin-right: 10px; color: #ffffff;">Release v2.2</span>
+                <span style="float: right; margin-top: 20px; margin-right: 10px; color: #ffffff;">Release v2.3</span>
 			</a>
 		</nav>
 		<div id="panel">
@@ -75,9 +76,23 @@
 				</div>
 				<hr>
 				<div id="more"></div>
+		
 				<button id="taghtia" class="btn btn-primary" style="background-color: #00426b; border-color: #00426b;" onclick="taghtia();">Check Coverage</button>
-                <hr>
-
+				<hr>
+				<a id="copy" class="btn" style="background-color:transparent" > <i class="bi bi-copy" style="color: #00426b; font-size: 20px;"></i></a>
+				<a id="share" class="btn" style="background-color:transparent"> <i class="bi bi-share" style="color: #00426b; font-size: 20px;"></i></a>
+				<a id="googlemaps" class="btn" style="background-color:transparent"><i class="bi bi-geo-alt" style="color: #00426b; font-size: 20px;"></i></a>
+			</div>
+		</div>
+		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+			<div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+			  <div class="toast-header">
+				<i class="bi bi-geo-alt"></i>
+				<strong class="me-auto" style="margin-left: 5px;">More Taghtia</strong>
+				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+			  </div>
+			  <div class="toast-body" id="copied">
+			  </div>
 			</div>
 		</div>
 		<input style="position: absolute; z-index: 1; margin-left: 50px; margin-top: 20px; border-radius: 5px; border: 1px solid #00426b; padding: 5px; background-color: #ffffff" type="text" id="address" placeholder="Enter your Governorate ↵"> 
@@ -86,5 +101,7 @@
 		</button>
 		<div id="map-display" class="dark"></div>
 		<script src='script.js'></script>
+
+		
 	</body>
 </html>
