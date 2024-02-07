@@ -74,6 +74,7 @@ if (lati && lngi) {
         fillColor: '#f03',
         fillOpacity: 0.5
     }).addTo(mymap);
+    taghtia();
 }
 document.getElementById("googlemaps").onclick = function() {
     if (typeof circleMarker === "undefined" ){ 
@@ -107,7 +108,9 @@ document.getElementById("copy").onclick = function() {
     }
     lat = Math.round(circleMarker._latlng.lat * 10000) / 10000;
     lng = Math.round(circleMarker._latlng.lng * 10000) / 10000;
-    shareurl = window.location.href + "?lat=" + lat + "&lng=" + lng;
+    shareurl = window.location.href;
+    var parts = shareurl.split("?");
+    shareurl = parts[0]+ "?lat=" + lat + "&lng=" + lng;;
     navigator.clipboard.writeText(shareurl);
     document.getElementById("copied").innerHTML = "Share URL copied to clipboard!";
     var toastElList = [].slice.call(document.querySelectorAll('.toast'))
