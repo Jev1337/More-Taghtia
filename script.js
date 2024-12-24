@@ -68,6 +68,14 @@ const urlParams = new URLSearchParams(window.location.search);
 const lati = urlParams.get('lat');
 const lngi = urlParams.get('lng');
 if (lati && lngi) {
+    if (typeof circleMarker !== "undefined" ){ 
+        mymap.removeLayer(circleMarker);    
+        mymap.eachLayer(function (layer) {
+            if (layer instanceof L.Tooltip) {
+                mymap.removeLayer(layer);
+            }
+        });     
+      }
     mymap.setView([lati, lngi], 17);
     circleMarker = new  L.circle([lati, lngi], 8, {
         color: 'red',
@@ -160,6 +168,14 @@ document.getElementById("xycord").onclick = function() {
             return;
         }
         coordinateModal.hide();
+        if (typeof circleMarker !== "undefined" ){ 
+            mymap.removeLayer(circleMarker);    
+            mymap.eachLayer(function (layer) {
+                if (layer instanceof L.Tooltip) {
+                    mymap.removeLayer(layer);
+                }
+            });     
+          }
         mymap.setView([lt, lg], 17);
         circleMarker = new L.circle([lt, lg], 8, {
             color: 'red',
@@ -363,4 +379,147 @@ async function taghtia(){
         document.getElementById("more").innerHTML = "";
     
     circleMarker.bindTooltip(stat, {permanent: true, className: 'stats'});
+    var history = JSON.parse(localStorage.getItem('history')) || [];
+    var newEntry = { lat: circleMarker._latlng.lat, lng: circleMarker._latlng.lng };
+    history.push(newEntry);
+    localStorage.setItem('history', JSON.stringify(history));
+}
+
+document.getElementById("history").onclick = function() {
+    var historyModal = new bootstrap.Modal(document.getElementById('historyModal'), {
+        keyboard: false
+    });
+
+    historyModal.show();
+
+    var historyList = document.getElementById('historyList');
+    historyList.innerHTML = '';
+
+    var history = JSON.parse(localStorage.getItem('history')) || [];
+
+    history.forEach(function(entry, index) {
+        var listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        var lat = Math.round(entry.lat * 10000) / 10000;
+        var lng = Math.round(entry.lng * 10000) / 10000;
+        listItem.innerHTML = `Lat: ${lat}, Lng: ${lng}`;
+        
+        var goToButton = document.createElement('button');
+        goToButton.className = 'btn btn-primary btn-sm';
+        goToButton.innerHTML = '<i class="bi bi-geo-alt"></i> Go';
+        
+        goToButton.onclick = function() {
+            if (typeof circleMarker !== "undefined" ){ 
+                mymap.removeLayer(circleMarker);    
+                mymap.eachLayer(function (layer) {
+                    if (layer instanceof L.Tooltip) {
+                        mymap.removeLayer(layer);
+                    }
+                });     
+              }
+            mymap.setView([entry.lat, entry.lng], 17);
+            circleMarker = new L.circle([entry.lat, entry.lng], 8, {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5
+            }).addTo(mymap);
+            historyModal.hide();
+            taghtia();
+        };
+        
+        listItem.appendChild(goToButton);
+        historyList.appendChild(listItem);
+    });
+}
+
+document.getElementById("fav").onclick = function() {
+    //show favouritesModal
+    var favourites = JSON.parse(localStorage.getItem('favourites')) || [];
+
+    var favouritesList = document.getElementById('favouritesList');
+    favouritesList.innerHTML = '';
+
+    favourites.forEach(function(entry, index) {
+        var listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        var lat = Math.round(entry.lat * 10000) / 10000;
+        var lng = Math.round(entry.lng * 10000) / 10000;
+        listItem.innerHTML = `Lat: ${lat}, Lng: ${lng}`;
+        
+        var buttonGroup = document.createElement('div');
+        buttonGroup.className = 'btn-group';
+
+        var goToButton = document.createElement('button');
+        goToButton.className = 'btn btn-primary btn-sm';
+        goToButton.innerHTML = '<i class="bi bi-geo-alt"></i> Go';
+        goToButton.onclick = function() {
+            if (typeof circleMarker !== "undefined" ){ 
+            mymap.removeLayer(circleMarker);    
+            mymap.eachLayer(function (layer) {
+                if (layer instanceof L.Tooltip) {
+                mymap.removeLayer(layer);
+                }
+            });     
+              }
+            mymap.setView([entry.lat, entry.lng], 17);
+            circleMarker = new L.circle([entry.lat, entry.lng], 8, {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5
+            }).addTo(mymap);
+            favouritesModal.hide();
+            taghtia();
+        };
+
+        var deleteButton = document.createElement('button');
+        deleteButton.className = 'btn btn-danger btn-sm';
+        deleteButton.innerHTML = '<i class="bi bi-trash"></i> Delete';
+        deleteButton.onclick = function() {
+            favourites.splice(index, 1);
+            localStorage.setItem('favourites', JSON.stringify(favourites));
+            favouritesList.removeChild(listItem);
+        };
+
+        buttonGroup.appendChild(goToButton);
+        buttonGroup.appendChild(deleteButton);
+        listItem.appendChild(buttonGroup);
+
+        favouritesList.appendChild(listItem);
+    });
+
+    document.getElementById('addFavourite').onclick = function() {
+        var lat = parseFloat(document.getElementById('favLat').value);
+        var lng = parseFloat(document.getElementById('favLng').value);
+        if (isNaN(lat) || isNaN(lng)) {
+            alert("Please enter valid coordinates");
+            return;
+        }
+        var newFavourite = { lat: lat, lng: lng };
+        favourites.push(newFavourite);
+        localStorage.setItem('favourites', JSON.stringify(favourites));
+        favouritesModal.hide();
+    };
+
+    document.getElementById('addCurrentLocation').onclick = function() {
+        if (typeof circleMarker === "undefined") {
+            alert("Please select a location on the map");
+            return;
+        }
+        var lat = circleMarker._latlng.lat;
+        var lng = circleMarker._latlng.lng;
+        var newFavourite = { lat: lat, lng: lng };
+        favourites.push(newFavourite);
+        localStorage.setItem('favourites', JSON.stringify(favourites));
+        favouritesModal.hide();
+    };
+    var favouritesModal = new bootstrap.Modal(document.getElementById('favouritesModal'), {
+        keyboard: false
+    });
+    favouritesModal.show();
+
+}
+
+document.getElementById("clearhistory").onclick = function() {
+    localStorage.removeItem('history');
+    location.reload();
 }
