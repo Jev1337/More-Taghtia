@@ -45,31 +45,31 @@
 					<h4>Potential:</h4>
 					<table width="100%">
 						<tr>
-							<td>2G:</td>
+							<td>2G</td>
 							<td style="color: orange;" id="2G">--</td>
 						</tr>
 						<tr>
-							<td>3G:</td>
+							<td>3G</td>
 							<td style="color: orange;" id="3G">--</td>
 						</tr>
 						<tr>
-							<td>4G:</td>
+							<td>4G</td>
 							<td style="color: orange;" id="4G">--</td>
 						</tr>
 						<tr>
-							<td>ADSL:</td>
+							<td>ADSL</td>
 							<td style="color: orange;" id="ADSL">--</td>
 						</tr>
 						<tr>
-							<td>VDSL:</td>
+							<td>VDSL</td>
 							<td style="color: orange;" id="VDSL">--</td>
 						</tr>
 						<tr>
-							<td>GPON Fiber:</td>
+							<td>GPON Fiber</td>
 							<td style="color: orange;" id="GPONFiber">--</td>
 						</tr>
 						<tr>
-							<td>P2P Fiber:</td>
+							<td>P2P Fiber</td>
 							<td style="color: orange;" id="P2PFiber">--</td>
 						</tr>
 					</table>
@@ -79,9 +79,13 @@
 		
 				<button id="taghtia" class="btn btn-primary" style="background-color: #00426b; border-color: #00426b;" onclick="taghtia();">Check Coverage</button>
 				<hr>
+				<div style="text-align: center;">
+					<p><b>Tools</b></p>
+				<a id="xycord" class="btn" style="background-color:transparent"><i class="bi bi-search" style="color: #00426b; font-size: 20px;"></i></a>
 				<a id="copy" class="btn" style="background-color:transparent" > <i class="bi bi-copy" style="color: #00426b; font-size: 20px;"></i></a>
 				<a id="share" class="btn" style="background-color:transparent"> <i class="bi bi-share" style="color: #00426b; font-size: 20px;"></i></a>
 				<a id="googlemaps" class="btn" style="background-color:transparent"><i class="bi bi-geo-alt" style="color: #00426b; font-size: 20px;"></i></a>
+			</div>
 			</div>
 		</div>
 		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
@@ -100,6 +104,36 @@
 			<i class="bi bi-crosshair"></i>
 		</button>
 		<div id="map-display" class="dark"></div>
+		<div class="modal fade" id="coordinateModal" tabindex="-1" aria-labelledby="coordinateModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="coordinateModalLabel">Enter Coordinates</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						
+					</div>
+				
+					<div class="modal-body">
+						<div class="modal-tip">
+							<small>Tip: These are X and Y cords found on Google Maps for example.</small>
+						</div>
+						<div class="mb-3">
+							<label for="lat" class="form-label">Latitude</label>
+							<input type="text" class="form-control" id="lat" placeholder="Example: 36.806495">
+						</div>
+						<div class="mb-3">
+							<label for="lng" class="form-label">Longitude</label>
+							<input type="text" class="form-control" id="lng" placeholder="Example: 10.181532">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="saveCoordinates">Save coordinates</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<script src='script.js'></script>
 
 		

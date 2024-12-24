@@ -143,6 +143,34 @@ $.getJSON('../front/toptenv1.json', function(data) {
 });
 */
 
+document.getElementById("xycord").onclick = function() {
+    
+
+    var coordinateModal = new bootstrap.Modal(document.getElementById('coordinateModal'), {
+        keyboard: false
+    });
+
+    coordinateModal.show();
+
+    document.getElementById('saveCoordinates').onclick = function() {
+        lt = document.getElementById("lat").value;
+        lg = document.getElementById("lng").value;
+        if (lt == "" || lg == "") {
+            alert("Please enter valid coordinates");
+            return;
+        }
+        coordinateModal.hide();
+        mymap.setView([lt, lg], 17);
+        circleMarker = new L.circle([lt, lg], 8, {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5
+        }).addTo(mymap);
+        taghtia();
+    }
+    
+}
+
 function populateMap() {
     $.getJSON("https://spreadsheets.google.com/feeds/list/" + SHEET_ID + "/1/public/values?alt=json", function(sheet) {
         var data = sheet.feed.entry;
