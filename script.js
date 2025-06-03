@@ -6,12 +6,170 @@ $.getScript("env.js", function() {
 });
 */
 /*
- * Initialize Map
+ * Initialize Map and Heatmap
  */
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWF0aWtpbjkiLCJhIjoiYjMyMjBjZTE4NWUxMDkxOWZjZjFjZWEzZTcxNDUxOTkifQ._ldFl3e17jCs7aWm6zMZ3Q';
 var mymap = L.map('map-display').setView([36.804914, 10.182365], 9);
 L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v12').addTo(mymap);
+
+// Heatmap variables
+var gponHeatmapData = [];
+var vdslHeatmapData = [];
+var adslHeatmapData = [];
+var gponHeatmapLayer = null;
+var vdslHeatmapLayer = null;
+var adslHeatmapLayer = null;
+var heatmapVisible = false;
+
+// Batch check variables
+var batchMode = false;
+var batchQueue = [];
+var batchMarkers = [];
+var batchProcessing = false;
+var batchSelectionActive = false; // Additional tracking variable
+
+// Initialize heatmap layers
+function initializeHeatmaps() {
+    // Remove existing layers
+    if (gponHeatmapLayer) {
+        mymap.removeLayer(gponHeatmapLayer);
+    }
+    if (vdslHeatmapLayer) {
+        mymap.removeLayer(vdslHeatmapLayer);
+    }
+    if (adslHeatmapLayer) {
+        mymap.removeLayer(adslHeatmapLayer);
+    }
+    
+    // GPON Fiber heatmap (Blue to Green gradient)
+    if (gponHeatmapData.length > 0) {
+        gponHeatmapLayer = L.heatLayer(gponHeatmapData, {
+            radius: 35,
+            blur: 25,
+            maxZoom: 18,
+            max: 1.0,
+            gradient: {
+                0.0: '#000080',    // Dark blue
+                0.3: '#0066CC',    // Medium blue
+                0.5: '#00CCFF',    // Light blue/cyan
+                0.7: '#00FF66',    // Green
+                0.9: '#00CC00',    // Dark green
+                1.0: '#006600'     // Very dark green
+            },
+            minOpacity: 0.6
+        });
+    }
+    
+    // VDSL heatmap (Orange gradient)
+    if (vdslHeatmapData.length > 0) {
+        vdslHeatmapLayer = L.heatLayer(vdslHeatmapData, {
+            radius: 30,
+            blur: 20,
+            maxZoom: 18,
+            max: 1.0,
+            gradient: {
+                0.0: '#FF8C00',    // Dark orange
+                0.3: '#FF9500',    // Medium orange
+                0.5: '#FFA500',    // Orange
+                0.7: '#FFB347',    // Light orange
+                0.9: '#FFCC80',    // Very light orange
+                1.0: '#FFD700'     // Gold
+            },
+            minOpacity: 0.5
+        });
+    }
+    
+    // ADSL heatmap (Red gradient)
+    if (adslHeatmapData.length > 0) {
+        adslHeatmapLayer = L.heatLayer(adslHeatmapData, {
+            radius: 25,
+            blur: 15,
+            maxZoom: 18,
+            max: 1.0,
+            gradient: {
+                0.0: '#8B0000',    // Dark red
+                0.3: '#CC0000',    // Medium red
+                0.5: '#FF0000',    // Red
+                0.7: '#FF3333',    // Light red
+                0.9: '#FF6666',    // Very light red
+                1.0: '#FF9999'     // Pink-red
+            },
+            minOpacity: 0.4
+        });
+    }
+    
+    // Add layers to map if heatmap is visible
+    if (heatmapVisible) {
+        if (adslHeatmapLayer) adslHeatmapLayer.addTo(mymap);
+        if (vdslHeatmapLayer) vdslHeatmapLayer.addTo(mymap);
+        if (gponHeatmapLayer) gponHeatmapLayer.addTo(mymap);
+    }
+}
+
+// Toggle heatmap visibility
+function toggleHeatmap() {
+    var totalLocations = gponHeatmapData.length + vdslHeatmapData.length + adslHeatmapData.length;
+    
+    if (totalLocations === 0) {
+        return;
+    }
+    
+    if (!gponHeatmapLayer && !vdslHeatmapLayer && !adslHeatmapLayer && totalLocations > 0) {
+        initializeHeatmaps();
+    }
+    
+    if (heatmapVisible) {
+        // Hide all heatmaps
+        if (gponHeatmapLayer) mymap.removeLayer(gponHeatmapLayer);
+        if (vdslHeatmapLayer) mymap.removeLayer(vdslHeatmapLayer);
+        if (adslHeatmapLayer) mymap.removeLayer(adslHeatmapLayer);
+        heatmapVisible = false;
+        document.getElementById("toggleHeatmap").innerHTML = '<i class="bi bi-thermometer-half" style="color: #00426b; font-size: 28px;"></i>';
+    } else {
+        // Show all heatmaps
+        if (adslHeatmapLayer) adslHeatmapLayer.addTo(mymap);
+        if (vdslHeatmapLayer) vdslHeatmapLayer.addTo(mymap);
+        if (gponHeatmapLayer) gponHeatmapLayer.addTo(mymap);
+        heatmapVisible = true;
+        document.getElementById("toggleHeatmap").innerHTML = '<i class="bi bi-thermometer-sun" style="color: #ff4500; font-size: 28px;"></i>';
+    }
+}
+
+// Add connection result to appropriate heatmap
+function addToHeatmap(lat, lng, connectionType, intensity = 1.0) {
+    var targetData = null;
+    var connectionName = "";
+    
+    // Determine which heatmap to add to
+    switch(connectionType) {
+        case 'GPON':
+            targetData = gponHeatmapData;
+            connectionName = "GPON Fiber";
+            break;
+        case 'VDSL':
+            targetData = vdslHeatmapData;
+            connectionName = "VDSL";
+            break;
+        case 'ADSL':
+            targetData = adslHeatmapData;
+            connectionName = "ADSL";
+            break;
+        default:
+            return; // Unknown connection type
+    }
+    
+    // Check if this location is already in the heatmap data (avoid duplicates)
+    // Using smaller threshold (0.0001 ≈ 11 meters) to allow nearby points with different connectivity
+    var exists = targetData.some(function(point) {
+        return Math.abs(point[0] - lat) < 0.0001 && Math.abs(point[1] - lng) < 0.0001;
+    });
+    
+    if (!exists) {
+        targetData.push([lat, lng, intensity]);
+        initializeHeatmaps();
+    }
+}
 
 function showMap(err,results) {
     if (err) {
@@ -47,6 +205,14 @@ document.getElementById('address').addEventListener('keypress', function(e) {
 mymap.on('click', addMarker);
 
 function addMarker(e){
+  // Check if we're in batch mode
+  console.log('Map clicked, batchMode:', batchMode, 'batchSelectionActive:', batchSelectionActive); // Debug log
+  if (batchMode && batchSelectionActive) {
+    console.log('Adding to batch queue:', e.latlng); // Debug log
+    addToBatchQueue(e.latlng);
+    return;
+  }
+  
   if (typeof circleMarker !== "undefined" ){ 
     mymap.removeLayer(circleMarker);    
     mymap.eachLayer(function (layer) {
@@ -330,6 +496,9 @@ async function taghtia(){
         document.getElementById("ADSL").style.color = "green";
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
         stat+="ADSL ✅<br>"
+        
+        // Add to ADSL heatmap
+        addToHeatmap(circleMarker._latlng.lat, circleMarker._latlng.lng, 'ADSL', 1.0);
     }else{
         document.getElementById("ADSL").innerHTML = "N/A";
         document.getElementById("ADSL").style.color = "red";
@@ -344,6 +513,9 @@ async function taghtia(){
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
         stat+="VDSL ✅<br>"
         
+        // Add to VDSL heatmap
+        addToHeatmap(circleMarker._latlng.lat, circleMarker._latlng.lng, 'VDSL', 1.0);
+        
     }else{
         document.getElementById("VDSL").innerHTML = "N/A";
         document.getElementById("VDSL").style.color = "red";
@@ -357,6 +529,9 @@ async function taghtia(){
         document.getElementById("GPONFiber").style.color = "green";
         circleMarker.setStyle({color: 'green', fillColor: 'green'});
         stat+="GPON Fiber ✅"
+        
+        // Add to heatmap when GPON is available
+        addToHeatmap(circleMarker._latlng.lat, circleMarker._latlng.lng, 'GPON', 1.0);
     }else{
         document.getElementById("GPONFiber").innerHTML = "N/A";
         document.getElementById("GPONFiber").style.color = "red";
@@ -520,6 +695,429 @@ document.getElementById("fav").onclick = function() {
 }
 
 document.getElementById("clearhistory").onclick = function() {
+    // Clear both history and heatmap data
     localStorage.removeItem('history');
-    location.reload();
+    
+    // Clear all heatmap data
+    gponHeatmapData = [];
+    vdslHeatmapData = [];
+    adslHeatmapData = [];
+    
+    // Remove all heatmap layers
+    if (gponHeatmapLayer) {
+        mymap.removeLayer(gponHeatmapLayer);
+        gponHeatmapLayer = null;
+    }
+    if (vdslHeatmapLayer) {
+        mymap.removeLayer(vdslHeatmapLayer);
+        vdslHeatmapLayer = null;
+    }
+    if (adslHeatmapLayer) {
+        mymap.removeLayer(adslHeatmapLayer);
+        adslHeatmapLayer = null;
+    }
+    
+    heatmapVisible = false;
+    document.getElementById("toggleHeatmap").innerHTML = '<i class="bi bi-thermometer-half" style="color: #00426b; font-size: 28px;"></i>';
+    
+    // Reload after a short delay
+    setTimeout(function() {
+        location.reload();
+    }, 1000);
+}
+
+document.getElementById("toggleHeatmap").onclick = function() {
+    toggleHeatmap();
+}
+
+// Batch checking functionality
+function toggleBatchMode() {
+    // Show batch modal regardless of current state
+    var batchModal = new bootstrap.Modal(document.getElementById('batchModal'), {
+        keyboard: false,
+        backdrop: 'static' // Prevent closing by clicking outside
+    });
+    batchModal.show();
+    
+    // Initialize batch modal event listeners only once
+    if (!window.batchModalInitialized) {
+        initializeBatchModal();
+        window.batchModalInitialized = true;
+        
+        // Add hidden event listener only once
+        document.getElementById('batchModal').addEventListener('hidden.bs.modal', function () {
+            console.log('Modal actually hidden, checking if batch mode should be reset'); // Debug log
+            // Only reset if batch selection is not active
+            if (!batchSelectionActive) {
+                console.log('Resetting batch mode because selection is not active'); // Debug log
+                batchMode = false;
+                batchSelectionActive = false;
+                document.getElementById("toggleBatchMode").innerHTML = '<i class="bi bi-cursor-fill" style="color: #00426b; font-size: 28px;"></i>';
+            } else {
+                console.log('Keeping batch mode active because selection is in progress'); // Debug log
+            }
+        });
+    }
+}
+
+function initializeBatchModal() {
+    // Start batch selection
+    document.getElementById('startBatchSelection').onclick = function() {
+        console.log('Start batch selection clicked'); // Debug log
+        batchMode = true;
+        batchSelectionActive = true;
+        console.log('batchMode set to:', batchMode, 'batchSelectionActive:', batchSelectionActive); // Debug log
+        document.getElementById("toggleBatchMode").innerHTML = '<i class="bi bi-cursor-fill" style="color: #ff4500; font-size: 28px;"></i>';
+        document.getElementById('startBatchSelection').style.display = 'none';
+        document.getElementById('stopBatchSelection').style.display = 'inline-block';
+        document.getElementById('batchSelectionAlert').style.display = 'block';
+        updateBatchDisplay();
+        
+        // Close the modal after starting selection so user can click on map
+        var modal = bootstrap.Modal.getInstance(document.getElementById('batchModal'));
+        if (modal) {
+            modal.hide();
+        }
+    };
+    
+    // Stop batch selection
+    document.getElementById('stopBatchSelection').onclick = function() {
+        console.log('Stop batch selection clicked'); // Debug log
+        batchMode = false;
+        batchSelectionActive = false;
+        console.log('batchMode set to:', batchMode, 'batchSelectionActive:', batchSelectionActive); // Debug log
+        document.getElementById("toggleBatchMode").innerHTML = '<i class="bi bi-cursor-fill" style="color: #00426b; font-size: 28px;"></i>';
+        document.getElementById('startBatchSelection').style.display = 'inline-block';
+        document.getElementById('stopBatchSelection').style.display = 'none';
+        document.getElementById('batchSelectionAlert').style.display = 'none';
+    };
+    
+    // Process batch
+    document.getElementById('processBatch').onclick = function() {
+        if (batchQueue.length > 0 && !batchProcessing) {
+            processBatchQueue();
+        }
+    };
+    
+    // Clear batch
+    document.getElementById('clearBatch').onclick = function() {
+        clearBatchQueue();
+    };
+    
+    // Handle the close button specifically - override Bootstrap's default behavior
+    var closeButton = document.querySelector('#batchModal .btn-close');
+    if (closeButton) {
+        closeButton.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Custom close button clicked'); // Debug log
+            
+            // Reset batch mode
+            batchMode = false;
+            batchSelectionActive = false;
+            document.getElementById("toggleBatchMode").innerHTML = '<i class="bi bi-cursor-fill" style="color: #00426b; font-size: 28px;"></i>';
+            
+            // Reset UI elements
+            document.getElementById('startBatchSelection').style.display = 'inline-block';
+            document.getElementById('stopBatchSelection').style.display = 'none';
+            document.getElementById('batchSelectionAlert').style.display = 'none';
+            
+            // Manually close the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('batchModal'));
+            if (modal) {
+                modal.hide();
+            }
+        };
+    }
+    
+    updateBatchDisplay();
+}
+
+function addToBatchQueue(latlng) {
+    console.log('addToBatchQueue called with:', latlng); // Debug log
+    
+    // Check if location already exists in queue
+    var exists = batchQueue.some(function(item) {
+        return Math.abs(item.lat - latlng.lat) < 0.0001 && Math.abs(item.lng - latlng.lng) < 0.0001;
+    });
+    
+    console.log('Location exists in queue:', exists); // Debug log
+    
+    if (!exists) {
+        var queueItem = {
+            lat: latlng.lat,
+            lng: latlng.lng,
+            status: 'pending',
+            id: 'batch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+        };
+        
+        batchQueue.push(queueItem);
+        console.log('Added to batch queue. New queue length:', batchQueue.length); // Debug log
+        
+        // Add visual marker
+        var marker = L.circleMarker(latlng, {
+            color: '#007bff',
+            fillColor: '#007bff',
+            fillOpacity: 0.7,
+            radius: 6,
+            weight: 2
+        }).addTo(mymap);
+        
+        var lat = Math.round(latlng.lat * 10000) / 10000;
+        var lng = Math.round(latlng.lng * 10000) / 10000;
+        marker.bindTooltip('Batch #' + batchQueue.length + '<br>' + lat + ', ' + lng, {
+            permanent: false,
+            direction: 'top',
+            className: 'batch-tooltip'
+        });
+        
+        batchMarkers.push({marker: marker, id: queueItem.id});
+        
+        updateBatchDisplay();
+    }
+}
+
+function updateBatchDisplay() {
+    document.getElementById('batchCount').textContent = batchQueue.length;
+    document.getElementById('queueCount').textContent = batchQueue.length;
+    
+    // Enable/disable process button
+    document.getElementById('processBatch').disabled = batchQueue.length === 0 || batchProcessing;
+    
+    // Update queue display
+    var queueDiv = document.getElementById('batchQueue');
+    if (batchQueue.length === 0) {
+        queueDiv.innerHTML = '<p class="text-muted text-center">No locations selected</p>';
+    } else {
+        var queueHtml = '';
+        batchQueue.forEach(function(item, index) {
+            var statusIcon = '';
+            var statusClass = '';
+            
+            switch(item.status) {
+                case 'pending':
+                    statusIcon = '<i class="bi bi-clock text-warning"></i>';
+                    statusClass = '';
+                    break;
+                case 'processing':
+                    statusIcon = '<i class="bi bi-arrow-clockwise text-primary"></i>';
+                    statusClass = 'table-active';
+                    break;
+                case 'completed':
+                    statusIcon = '<i class="bi bi-check-circle-fill text-success"></i>';
+                    statusClass = 'table-success';
+                    break;
+                case 'error':
+                    statusIcon = '<i class="bi bi-x-circle-fill text-danger"></i>';
+                    statusClass = 'table-danger';
+                    break;
+            }
+            
+            var lat = Math.round(item.lat * 10000) / 10000;
+            var lng = Math.round(item.lng * 10000) / 10000;
+            
+            queueHtml += '<div class="d-flex justify-content-between align-items-center p-2 mb-1 border rounded ' + statusClass + '">';
+            queueHtml += '<small>' + (index + 1) + '. ' + lat + ', ' + lng + '</small>';
+            queueHtml += statusIcon;
+            queueHtml += '</div>';
+        });
+        queueDiv.innerHTML = queueHtml;
+    }
+}
+
+function clearBatchQueue() {
+    batchQueue = [];
+    clearBatchMarkers();
+    updateBatchDisplay();
+    document.getElementById('batchProgress').style.display = 'none';
+    document.getElementById('batchStatus').textContent = '';
+}
+
+function clearBatchMarkers() {
+    batchMarkers.forEach(function(item) {
+        mymap.removeLayer(item.marker);
+    });
+    batchMarkers = [];
+}
+
+async function processBatchQueue() {
+    if (batchProcessing || batchQueue.length === 0) return;
+    
+    batchProcessing = true;
+    document.getElementById('processBatch').disabled = true;
+    document.getElementById('batchProgress').style.display = 'block';
+    
+    var totalItems = batchQueue.length;
+    var completedItems = 0;
+    var batchSize = 5; // Process 5 locations at a time
+    
+    document.getElementById('batchStatus').textContent = 'Processing ' + totalItems + ' locations in batches of ' + batchSize + '...';
+    document.getElementById('batchProgressBar').style.width = '0%';
+    document.getElementById('batchProgressBar').textContent = '0%';
+    
+    // Process items in chunks of 5
+    for (var i = 0; i < batchQueue.length; i += batchSize) {
+        var chunk = batchQueue.slice(i, i + batchSize);
+        var chunkNumber = Math.floor(i / batchSize) + 1;
+        var totalChunks = Math.ceil(batchQueue.length / batchSize);
+        
+        // Set current chunk items to processing status
+        chunk.forEach(function(item) {
+            item.status = 'processing';
+        });
+        updateBatchDisplay();
+        
+        document.getElementById('batchStatus').textContent = 'Processing batch ' + chunkNumber + ' of ' + totalChunks + ' (' + chunk.length + ' locations)...';
+        
+        // Create promises for current chunk
+        var chunkPromises = chunk.map(function(item) {
+            return processBatchItem(item).then(function(result) {
+                item.status = 'completed';
+                completedItems++;
+                
+                // Update progress
+                var progress = Math.round((completedItems / totalItems) * 100);
+                document.getElementById('batchProgressBar').style.width = progress + '%';
+                document.getElementById('batchProgressBar').textContent = progress + '%';
+                
+                updateBatchDisplay();
+                return result;
+            }).catch(function(error) {
+                console.error('Error processing batch item:', error);
+                item.status = 'error';
+                completedItems++;
+                
+                // Update progress
+                var progress = Math.round((completedItems / totalItems) * 100);
+                document.getElementById('batchProgressBar').style.width = progress + '%';
+                document.getElementById('batchProgressBar').textContent = progress + '%';
+                
+                updateBatchDisplay();
+                return null;
+            });
+        });
+        
+        try {
+            // Wait for current chunk to complete
+            await Promise.all(chunkPromises);
+        } catch (error) {
+            console.error('Error in chunk processing:', error);
+        }
+        
+        // Small delay between chunks to be gentle on the API
+        if (i + batchSize < batchQueue.length) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+    
+    // Update batch markers to show completion status
+    updateBatchMarkerStyles();
+    
+    batchProcessing = false;
+    document.getElementById('processBatch').disabled = false;
+    document.getElementById('batchStatus').textContent = 'All locations processed in batches! Check the heatmap for results.';
+}
+
+async function processBatchItem(item) {
+    var token = await getToken();
+    var coded = codeCoordinates(item.lng, item.lat);
+    var X = coded.xCoded;
+    var Y = coded.yCoded;
+    var payload = {TaghtiaRequest: {token: token, X: X, Y: Y}};
+    
+    var response = await fetch("https://geo.tunisietelecom.tn/rsm/RSMService.svc/TaghtiaUltimate", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+    });
+    
+    var data = await response.json();
+    var result = data.TaghtiaUltimateResult;
+    
+    // Process results and add to heatmaps
+    if (result.taghtiaADSLVDSL.taghtiaADSL.Code_taghtia == 200 && result.taghtiaADSLVDSL.taghtiaADSL.Taghtia == "OUI") {
+        addToHeatmap(item.lat, item.lng, 'ADSL', 1.0);
+        item.adsl = true;
+    }
+    
+    if (result.taghtiaADSLVDSL.taghtiaVDSL.Code_taghtia == 200 && result.taghtiaADSLVDSL.taghtiaVDSL.Taghtia == "OUI") {
+        addToHeatmap(item.lat, item.lng, 'VDSL', 1.0);
+        item.vdsl = true;
+    }
+    
+    if (result.taghtiaGPON.Code_taghtia == 200 && result.taghtiaGPON.Message_taghtia == "OK" && result.taghtiaGPON.Taghtia == "OUI") {
+        addToHeatmap(item.lat, item.lng, 'GPON', 1.0);
+        item.gpon = true;
+    }
+    
+    return item;
+}
+
+function updateBatchMarkerStyles() {
+    batchMarkers.forEach(function(markerItem) {
+        var queueItem = batchQueue.find(function(item) {
+            return item.id === markerItem.id;
+        });
+        
+        if (queueItem) {
+            var color = '#6c757d'; // Default gray
+            var tooltipContent = '';
+            var tooltipClass = 'batch-tooltip';
+            var lat = Math.round(queueItem.lat * 10000) / 10000;
+            var lng = Math.round(queueItem.lng * 10000) / 10000;
+            
+            if (queueItem.status === 'completed') {
+                var connections = [];
+                if (queueItem.gpon) connections.push('GPON ✅');
+                if (queueItem.vdsl) connections.push('VDSL ✅');
+                if (queueItem.adsl) connections.push('ADSL ✅');
+                
+                if (connections.length === 0) {
+                    connections.push('No connection ❌');
+                    color = '#6c757d'; // Gray for no connection
+                } else {
+                    // Determine color based on best available connection
+                    if (queueItem.gpon) {
+                        color = '#28a745'; // Green for GPON
+                    } else if (queueItem.vdsl) {
+                        color = '#fd7e14'; // Orange for VDSL
+                    } else if (queueItem.adsl) {
+                        color = '#dc3545'; // Red for ADSL
+                    }
+                }
+                
+                tooltipContent = lat + ', ' + lng + '<br>' + connections.join('<br>');
+                tooltipClass = 'connection-status';
+            } else if (queueItem.status === 'error') {
+                color = '#dc3545'; // Red for error
+                tooltipContent = lat + ', ' + lng + '<br>Error checking connection';
+                tooltipClass = 'connection-status';
+            } else if (queueItem.status === 'processing') {
+                color = '#007bff'; // Blue for processing
+                tooltipContent = lat + ', ' + lng + '<br>Processing...';
+            } else {
+                tooltipContent = 'Batch #' + (batchQueue.indexOf(queueItem) + 1) + '<br>' + lat + ', ' + lng;
+            }
+            
+            markerItem.marker.setStyle({
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.8
+            });
+            
+            // Update tooltip with new content and class
+            markerItem.marker.unbindTooltip();
+            markerItem.marker.bindTooltip(tooltipContent, {
+                permanent: false,
+                direction: 'top',
+                className: tooltipClass
+            });
+        }
+    });
+}
+
+document.getElementById("toggleBatchMode").onclick = function() {
+    toggleBatchMode();
 }

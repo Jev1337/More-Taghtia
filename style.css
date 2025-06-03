@@ -135,3 +135,76 @@ div#panelContent {
 .navbar-collapse {
 	background-color: #fff;
 }
+
+/* Batch Check Modal Styles */
+#batchModal .modal-dialog {
+    max-width: 900px;
+}
+
+#batchQueue {
+    background-color: #f8f9fa;
+}
+
+#batchQueue .border {
+    transition: all 0.3s ease;
+}
+
+#batchQueue .table-active {
+    background-color: #e3f2fd !important;
+    border-color: #2196f3 !important;
+}
+
+#batchQueue .table-success {
+    background-color: #e8f5e8 !important;
+    border-color: #28a745 !important;
+}
+
+#batchQueue .table-danger {
+    background-color: #f8e6e6 !important;
+    border-color: #dc3545 !important;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    0% {
+        background-position: 1rem 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* Leaflet tooltip styles for batch markers */
+.leaflet-tooltip.batch-tooltip {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 4px 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-weight: 500;
+}
+
+.leaflet-tooltip.batch-tooltip:before {
+    border-top-color: #007bff;
+}
+
+/* Style for connection status tooltips */
+.leaflet-tooltip.connection-status {
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 12px;
+    padding: 6px 10px;
+    max-width: 200px;
+    line-height: 1.3;
+}
+
+.leaflet-tooltip.connection-status:before {
+    border-top-color: rgba(0,0,0,0.8);
+}
